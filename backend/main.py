@@ -9,6 +9,7 @@ import joblib
 import pandas as pd
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -48,6 +49,22 @@ class LeadIn(BaseModel):
     email: str
     company: str = ""
     use_case: str = ""
+
+
+@app.get("/")
+def root():
+    return {
+        "name": "CustomerPulse API",
+        "status": "running",
+        "frontend": "http://127.0.0.1:5173/app",
+        "docs": "/docs",
+        "endpoints": ["/summary", "/customers", "/predict-upload", "/analytics", "/model-intelligence"],
+    }
+
+
+@app.get("/app")
+def app_redirect():
+    return RedirectResponse("http://127.0.0.1:5173/app")
 
 
 def load_model():
